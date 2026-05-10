@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
-import 'package:smollan_tvmaze/pages/home_page.dart';
+import 'package:smollan_tvmaze/pages/main_page.dart';
 import 'package:smollan_tvmaze/providers/favourites_provider.dart';
 import 'package:smollan_tvmaze/providers/movie_provider.dart';
 import 'package:smollan_tvmaze/providers/theme_provider.dart';
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.currentTheme,
-            home: HomePage(),
+            home: MainPage(),
           );
         },
       ),

@@ -9,51 +9,91 @@ class MovieProvider extends ChangeNotifier {
   List<ShowModel> shows = [];
   List<ShowModel> searchResults = [];
 
-  UIState uiState = UIState.loading;
+  // UIState uiState = UIState.loading;
+  UIState homeState = UIState.loading;
+
+  UIState searchState = UIState.success;
 
   String errorMessage = '';
 
   MovieCategory selectedCategory = MovieCategory.trending;
 
   Future<void> fetchShows() async {
-    uiState = UIState.loading;
+    if (shows.isNotEmpty) return;
+    homeState = UIState.loading;
     notifyListeners();
 
     try {
       shows = await _apiService.fetchShows();
 
-      uiState = UIState.success;
+      homeState = UIState.success;
     } catch (e) {
       errorMessage = e.toString();
 
-      uiState = UIState.error;
+      homeState = UIState.error;
     }
 
     notifyListeners();
   }
 
+  String lastQuery = '';
+
   Future<void> searchShows(String query) async {
+    query = query.trim();
+
     if (query.isEmpty) {
       searchResults = [];
+
+      searchState = UIState.success;
+
       notifyListeners();
+
       return;
     }
 
-    uiState = UIState.loading;
-    notifyListeners();
+    if (query == lastQuery) return;
+
+    lastQuery = query;
 
     try {
+      searchState = UIState.loading;
+
+      notifyListeners();
+
       searchResults = await _apiService.searchShows(query);
 
-      uiState = UIState.success;
+      searchState = UIState.success;
     } catch (e) {
       errorMessage = e.toString();
 
-      uiState = UIState.error;
+      searchState = UIState.error;
     }
 
     notifyListeners();
   }
+
+  // Future<void> searchShows(String query) async {
+  //   if (query.isEmpty) {
+  //     searchResults = [];
+  //     notifyListeners();
+  //     return;
+  //   }
+
+  //   searchState = UIState.loading;
+  //   notifyListeners();
+
+  //   try {
+  //     searchResults = await _apiService.searchShows(query);
+
+  //     searchState = UIState.success;
+  //   } catch (e) {
+  //     errorMessage = e.toString();
+
+  //     searchState = UIState.error;
+  //   }
+
+  //   notifyListeners();
+  // }
 
   void changeCategory(MovieCategory category) {
     selectedCategory = category;

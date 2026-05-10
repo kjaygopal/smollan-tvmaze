@@ -25,7 +25,7 @@ class FloatingBottomNavBar extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, _) {
-        final page = controller.hasClients ? controller.page ?? 1 : 1;
+        final page = controller.hasClients ? controller.page ?? 0 : 0;
 
         return SizedBox(
           height: 60,

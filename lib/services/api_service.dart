@@ -4,7 +4,7 @@ import 'package:smollan_tvmaze/models/show_models.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = "https://api.tvmaze.com/";
+  static const String baseUrl = "https://api.tvmaze.com";
   Future<List<ShowModel>> fetchShows() async {
     try {
       final response = await http.get(Uri.parse('$baseUrl/shows'));
