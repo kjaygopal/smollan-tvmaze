@@ -39,17 +39,33 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        physics: const BouncingScrollPhysics(),
-        controller: _controller,
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          PageView(
+            physics: const BouncingScrollPhysics(),
+            controller: _controller,
 
-        children: const [HomePage(), SearchPage(), FavoritesPage()],
+            children: const [HomePage(), SearchPage(), FavoritesPage()],
+          ),
+
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 20,
+
+            child: FloatingBottomNavBar(
+              controller: _controller,
+              onTap: onNavTap,
+            ),
+          ),
+        ],
       ),
 
-      bottomNavigationBar: FloatingBottomNavBar(
-        controller: _controller,
-        onTap: onNavTap,
-      ),
+      // bottomNavigationBar: FloatingBottomNavBar(
+      //   controller: _controller,
+      //   onTap: onNavTap,
+      // ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smollan_tvmaze/pages/details_page.dart';
 import 'package:smollan_tvmaze/providers/movie_provider.dart';
 import 'package:smollan_tvmaze/providers/theme_provider.dart';
 import 'package:smollan_tvmaze/utils/enums.dart';
@@ -80,10 +81,48 @@ class _HomePageState extends State<HomePage> {
                       }
 
                       if (movieProvider.homeState == UIState.error) {
-                        return Center(child: Text(movieProvider.errorMessage));
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+
+                            children: [
+                              const Icon(Icons.wifi_off, size: 70),
+
+                              const SizedBox(height: 20),
+
+                              const Text(
+                                "No internet connection",
+
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              const Text(
+                                "Please check your network\nand try again.",
+
+                                textAlign: TextAlign.center,
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              ElevatedButton(
+                                onPressed: () {
+                                  context.read<MovieProvider>().fetchShows();
+                                },
+
+                                child: const Text("Retry"),
+                              ),
+                            ],
+                          ),
+                        );
                       }
 
                       return GridView.builder(
+                        padding: const EdgeInsets.only(bottom: 70),
                         itemCount: shows.length,
 
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -96,31 +135,44 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (context, index) {
                           final show = shows[index];
 
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DetailsPage(show: show),
+                                ),
+                              );
+                            },
+                            child: Hero(
+                              tag: show.id,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
 
-                            child: show.image.isNotEmpty
-                                ? CachedNetworkImage(
-                                    imageUrl: show.image,
-                                    fit: BoxFit.cover,
+                                child: show.image.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageUrl: show.image,
+                                        fit: BoxFit.cover,
 
-                                    placeholder: (context, url) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    },
+                                        placeholder: (context, url) {
+                                          return const Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        },
 
-                                    errorWidget: (context, url, error) {
-                                      return const Icon(Icons.error);
-                                    },
-                                  )
-                                : Container(
-                                    color: Colors.grey.shade800,
+                                        errorWidget: (context, url, error) {
+                                          return const Icon(Icons.error);
+                                        },
+                                      )
+                                    : Container(
+                                        color: Colors.grey.shade800,
 
-                                    child: const Center(
-                                      child: Icon(Icons.movie, size: 40),
-                                    ),
-                                  ),
+                                        child: const Center(
+                                          child: Icon(Icons.movie, size: 40),
+                                        ),
+                                      ),
+                              ),
+                            ),
                           );
                         },
                       );
@@ -129,6 +181,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
+            // SizedBox(height: 30),
           ],
         ),
       ),

@@ -10,6 +10,8 @@ import 'package:smollan_tvmaze/utils/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+  await Hive.openBox('settings');
+  await Hive.openBox('favorites');
   runApp(const MyApp());
 }
 

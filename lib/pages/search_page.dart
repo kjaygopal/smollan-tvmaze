@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:smollan_tvmaze/pages/details_page.dart';
 import 'dart:async';
 
 import 'package:smollan_tvmaze/providers/movie_provider.dart';
@@ -23,6 +24,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _onSearchChanged() {
+    setState(() {});
     if (_debounce?.isActive ?? false) {
       _debounce!.cancel();
     }
@@ -59,6 +61,12 @@ class _SearchPageState extends State<SearchPage> {
               TextField(
                 controller: searchController,
                 decoration: InputDecoration(
+                  suffixIcon: searchController.text.trim().isEmpty
+                      ? null
+                      : IconButton(
+                          onPressed: () => searchController.clear(),
+                          icon: Icon(Icons.close),
+                        ),
                   hint: Text("Search shows, movies etc.."),
                   prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(
@@ -97,35 +105,50 @@ class _SearchPageState extends State<SearchPage> {
                       itemBuilder: (context, index) {
                         final show = shows[index];
 
-                        return ListTile(
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DetailsPage(show: show),
+                              ),
+                            );
+                          },
+                          child: Hero(
+                            tag: show.id,
+                            child: Material(
+                              child: ListTile(
+                                leading: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
 
-                            child: show.image.isNotEmpty
-                                ? CachedNetworkImage(
-                                    imageUrl: show.image,
-                                    width: 50,
-                                    fit: BoxFit.cover,
+                                  child: show.image.isNotEmpty
+                                      ? CachedNetworkImage(
+                                          imageUrl: show.image,
+                                          width: 50,
+                                          fit: BoxFit.cover,
 
-                                    placeholder: (context, url) {
-                                      return const Center(child: null);
-                                    },
+                                          placeholder: (context, url) {
+                                            return const Center(child: null);
+                                          },
 
-                                    errorWidget: (context, url, error) {
-                                      return const Icon(Icons.error);
-                                    },
-                                  )
-                                : Container(
-                                    width: 50,
-                                    color: Colors.grey.shade800,
+                                          errorWidget: (context, url, error) {
+                                            return const Icon(Icons.error);
+                                          },
+                                        )
+                                      : Container(
+                                          width: 50,
+                                          color: Colors.grey.shade800,
 
-                                    child: const Icon(Icons.movie),
-                                  ),
+                                          child: const Icon(Icons.movie),
+                                        ),
+                                ),
+
+                                title: Text(show.name),
+
+                                subtitle: Text(show.genres.join(', ')),
+                              ),
+                            ),
                           ),
-
-                          title: Text(show.name),
-
-                          subtitle: Text(show.genres.join(', ')),
                         );
                       },
                     );
