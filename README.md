@@ -50,5 +50,4 @@ lib/
 ├── providers/
 ├── services/
 ├── utils/
-├── widgets/
 └── main.dart
