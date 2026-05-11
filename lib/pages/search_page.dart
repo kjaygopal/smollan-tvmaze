@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:smollan_tvmaze/pages/details_page.dart';
 import 'dart:async';
@@ -84,7 +85,37 @@ class _SearchPageState extends State<SearchPage> {
                     }
 
                     if (movieProvider.searchState == UIState.error) {
-                      return Center(child: Text(movieProvider.errorMessage));
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+
+                          children: [
+                            Lottie.asset(
+                              'assets/lottie/offline.json',
+                              width: 160,
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            const Text(
+                              "No internet connection",
+
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            const Text(
+                              "Please check your network\nand try again.",
+
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      );
                     }
                     if (searchController.text.trim().isEmpty) {
                       return const Center(
