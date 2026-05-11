@@ -8,6 +8,7 @@ class ApiService {
   Future<List<ShowModel>> fetchShows() async {
     try {
       final response = await http.get(Uri.parse('$baseUrl/shows'));
+
       if (response.statusCode == 200) {
         final List data = jsonDecode(response.body);
 

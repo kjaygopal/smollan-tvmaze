@@ -18,6 +18,11 @@ This project was developed as part of a Flutter Internship Assignment for Smolla
 - Responsive UI for multiple screen sizes
 - Smooth custom floating bottom navigation
 
+## Categories are derived locally from TVMaze data:
+- Popular -> sorted using TVMaze weight metric
+- Trending -> featured subset
+- Upcoming -> latest added shows
+
 ---
 
 # 🌙 Bonus Features

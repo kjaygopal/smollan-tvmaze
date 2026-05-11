@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:smollan_tvmaze/pages/details_page.dart';
 import 'package:smollan_tvmaze/providers/movie_provider.dart';
@@ -55,10 +56,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: .center,
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text("Trending shows"),
-            ),
             SizedBox(height: 10),
             Expanded(
               child: LayoutBuilder(
@@ -75,9 +72,15 @@ class _HomePageState extends State<HomePage> {
 
                   return Consumer<MovieProvider>(
                     builder: (context, movieProvider, value) {
-                      final shows = movieProvider.shows.take(30).toList();
+                      final shows = movieProvider.filteredShows;
                       if (movieProvider.homeState == UIState.loading) {
-                        return const Center(child: CircularProgressIndicator());
+                        return Center(
+                          child: Lottie.asset(
+                            'assets/lottie/movie_file.json',
+
+                            width: 180,
+                          ),
+                        );
                       }
 
                       if (movieProvider.homeState == UIState.error) {
@@ -86,7 +89,10 @@ class _HomePageState extends State<HomePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
 
                             children: [
-                              const Icon(Icons.wifi_off, size: 70),
+                              Lottie.asset(
+                                'assets/lottie/offline.json',
+                                width: 160,
+                              ),
 
                               const SizedBox(height: 20),
 
@@ -120,62 +126,216 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       }
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: 45,
 
-                      return GridView.builder(
-                        padding: const EdgeInsets.only(bottom: 70),
-                        itemCount: shows.length,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
 
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          childAspectRatio: .68,
-                        ),
+                              itemCount: MovieCategory.values.length,
 
-                        itemBuilder: (context, index) {
-                          final show = shows[index];
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(width: 10),
 
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => DetailsPage(show: show),
-                                ),
-                              );
-                            },
-                            child: Hero(
-                              tag: show.id,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
+                              itemBuilder: (context, index) {
+                                final category = MovieCategory.values[index];
 
-                                child: show.image.isNotEmpty
-                                    ? CachedNetworkImage(
-                                        imageUrl: show.image,
-                                        fit: BoxFit.cover,
+                                final isSelected =
+                                    movieProvider.selectedCategory == category;
 
-                                        placeholder: (context, url) {
-                                          return const Center(
-                                            child: CircularProgressIndicator(),
-                                          );
-                                        },
+                                return GestureDetector(
+                                  onTap: () {
+                                    movieProvider.loadCategory(category);
+                                  },
 
-                                        errorWidget: (context, url, error) {
-                                          return const Icon(Icons.error);
-                                        },
-                                      )
-                                    : Container(
-                                        color: Colors.grey.shade800,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 10,
+                                    ),
 
-                                        child: const Center(
-                                          child: Icon(Icons.movie, size: 40),
-                                        ),
-                                      ),
-                              ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                          : const Color.fromARGB(
+                                              255,
+                                              97,
+                                              96,
+                                              96,
+                                            ),
+
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+
+                                    child: Text(category.name.toUpperCase()),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          Expanded(
+                            child: GridView.builder(
+                              padding: const EdgeInsets.only(bottom: 70),
+
+                              itemCount: shows.length,
+
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: crossAxisCount,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                    childAspectRatio: .68,
+                                  ),
+
+                              itemBuilder: (context, index) {
+                                final show = shows[index];
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+
+                                      MaterialPageRoute(
+                                        builder: (_) => DetailsPage(show: show),
+                                      ),
+                                    );
+                                  },
+
+                                  child: Hero(
+                                    tag: show.id,
+
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+
+                                      child: show.image.isNotEmpty
+                                          ? CachedNetworkImage(
+                                              imageUrl: show.image,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Container(
+                                              color: Colors.grey.shade800,
+
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.movie,
+                                                  size: 40,
+                                                ),
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       );
+
+                      // SizedBox(
+                      //   height: 45,
+
+                      //   child: ListView.separated(
+                      //     scrollDirection: Axis.horizontal,
+
+                      //     itemCount: MovieCategory.values.length,
+
+                      //     separatorBuilder: (_, __) =>
+                      //         const SizedBox(width: 10),
+
+                      //     itemBuilder: (context, index) {
+                      //       final category = MovieCategory.values[index];
+
+                      //       final isSelected =
+                      //           movieProvider.selectedCategory == category;
+
+                      //       return GestureDetector(
+                      //         onTap: () {
+                      //           movieProvider.loadCategory(category);
+                      //         },
+
+                      //         child: Container(
+                      //           padding: const EdgeInsets.symmetric(
+                      //             horizontal: 16,
+                      //             vertical: 10,
+                      //           ),
+
+                      //           decoration: BoxDecoration(
+                      //             color: isSelected
+                      //                 ? Theme.of(context).colorScheme.primary
+                      //                 : Colors.grey.shade800,
+
+                      //             borderRadius: BorderRadius.circular(20),
+                      //           ),
+
+                      //           child: Text(category.name.toUpperCase()),
+                      //         ),
+                      //       );
+                      //     },
+                      //   ),
+                      // );
+
+                      // return GridView.builder(
+                      //   padding: const EdgeInsets.only(bottom: 70),
+                      //   itemCount: shows.length,
+
+                      //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      //     crossAxisCount: crossAxisCount,
+                      //     crossAxisSpacing: 10,
+                      //     mainAxisSpacing: 10,
+                      //     childAspectRatio: .68,
+                      //   ),
+
+                      //   itemBuilder: (context, index) {
+                      //     final show = shows[index];
+
+                      //     return GestureDetector(
+                      //       onTap: () {
+                      //         Navigator.push(
+                      //           context,
+                      //           MaterialPageRoute(
+                      //             builder: (_) => DetailsPage(show: show),
+                      //           ),
+                      //         );
+                      //       },
+                      //       child: Hero(
+                      //         tag: show.id,
+                      //         child: ClipRRect(
+                      //           borderRadius: BorderRadius.circular(12),
+
+                      //           child: show.image.isNotEmpty
+                      //               ? CachedNetworkImage(
+                      //                   imageUrl: show.image,
+                      //                   fit: BoxFit.cover,
+
+                      //                   placeholder: (context, url) {
+                      //                     return const Center(
+                      //                       child: CircularProgressIndicator(),
+                      //                     );
+                      //                   },
+
+                      //                   errorWidget: (context, url, error) {
+                      //                     return const Icon(Icons.error);
+                      //                   },
+                      //                 )
+                      //               : Container(
+                      //                   color: Colors.grey.shade800,
+
+                      //                   child: const Center(
+                      //                     child: Icon(Icons.movie, size: 40),
+                      //                   ),
+                      //                 ),
+                      //         ),
+                      //       ),
+                      //     );
+                      //   },
+                      // );
                     },
                   );
                 },

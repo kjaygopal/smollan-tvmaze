@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:smollan_tvmaze/models/show_models.dart';
-import 'package:smollan_tvmaze/pages/favorites_page.dart';
 import 'package:smollan_tvmaze/providers/favourites_provider.dart';
 
 class DetailsPage extends StatelessWidget {

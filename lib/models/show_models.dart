@@ -1,5 +1,6 @@
 class ShowModel {
   final int id;
+  final int weight;
   final String name;
   final List<String> genres;
   final double rating;
@@ -9,6 +10,7 @@ class ShowModel {
   final String status;
 
   ShowModel({
+    required this.weight,
     required this.id,
     required this.name,
     required this.genres,
@@ -21,6 +23,7 @@ class ShowModel {
 
   factory ShowModel.fromJson(Map<String, dynamic> json) {
     return ShowModel(
+      weight: json['weight'] ?? 0,
       id: json['id'] ?? 0,
 
       name: json['name'] ?? 'Unknown',
@@ -61,9 +64,10 @@ class ShowModel {
       genres: List<String>.from(map['genres']),
       rating: map['rating'],
       summary: map['summary'],
-      image: map['image'],
+      image: map['image'] ?? '',
       premiered: map['premiered'],
       status: map['status'],
+      weight: map['weight'] ?? 0,
     );
   }
 

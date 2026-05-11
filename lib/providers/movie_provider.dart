@@ -8,6 +8,7 @@ class MovieProvider extends ChangeNotifier {
 
   List<ShowModel> shows = [];
   List<ShowModel> searchResults = [];
+  List<ShowModel> filteredShows = [];
 
   // UIState uiState = UIState.loading;
   UIState homeState = UIState.loading;
@@ -25,6 +26,8 @@ class MovieProvider extends ChangeNotifier {
 
     try {
       shows = await _apiService.fetchShows();
+
+      filteredShows = shows.take(30).toList();
 
       homeState = UIState.success;
     } catch (e) {
@@ -72,31 +75,33 @@ class MovieProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> searchShows(String query) async {
-  //   if (query.isEmpty) {
-  //     searchResults = [];
-  //     notifyListeners();
-  //     return;
-  //   }
-
-  //   searchState = UIState.loading;
-  //   notifyListeners();
-
-  //   try {
-  //     searchResults = await _apiService.searchShows(query);
-
-  //     searchState = UIState.success;
-  //   } catch (e) {
-  //     errorMessage = e.toString();
-
-  //     searchState = UIState.error;
-  //   }
-
-  //   notifyListeners();
-  // }
-
-  void changeCategory(MovieCategory category) {
+  void loadCategory(MovieCategory category) {
     selectedCategory = category;
+
+    switch (category) {
+      case MovieCategory.trending:
+        filteredShows = shows.take(30).toList();
+
+        break;
+
+      case MovieCategory.popular:
+        final popular = [...shows];
+
+        popular.sort((a, b) => b.weight.compareTo(a.weight));
+
+        filteredShows = popular.take(30).toList();
+
+        break;
+
+      case MovieCategory.upcoming:
+        final upcoming = [...shows];
+
+        upcoming.sort((a, b) => b.id.compareTo(a.id));
+
+        filteredShows = upcoming.take(30).toList();
+
+        break;
+    }
 
     notifyListeners();
   }
